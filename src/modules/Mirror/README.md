@@ -1,0 +1,1 @@
+Mirror displays table values for testing purposes.

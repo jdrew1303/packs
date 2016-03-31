@@ -1,0 +1,1 @@
+Does not render to DOM. Returns table variable with name `variable` and value `true` (`false`) with probability `p` (`1-p`).
