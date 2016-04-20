@@ -14,6 +14,12 @@ class Container extends React.Component {
   constructor (props) {
     super(props)
     this.state = store.getState()
+
+    const urlParams = _(location.search.slice(1).split('&'))
+      .map((item) => item.split('='))
+      .object()
+      .value()
+
     store.subscribe(() => {
       this.setState(store.getState())
     })
@@ -34,11 +40,20 @@ class Container extends React.Component {
     })
 
     // simulated
-    if (params.index) {
+    if (params.sim) {
       store.dispatch({
         type: 'SET_TABLE_INDEX',
         table: simulateOver(table, queue.slice(0, Number(params.index)), modules),
-        index: Number(params.index)
+        index: Number(params.sim)
+      })
+    }
+
+    window.onpopstate = (event) => {
+      console.log('pop', event)
+      store.dispatch({
+        type: 'SET_TABLE_INDEX',
+        table: event.state,
+        index: event.state && event.state.index || 0
       })
     }
   }
@@ -51,6 +66,8 @@ class Container extends React.Component {
   }
 
   push (newData) {
+    window.scrollTo(0, 0)
+
     const {
       firebase,
       surveyName,
@@ -65,17 +82,35 @@ class Container extends React.Component {
       [`module_${index - 1}_t`]: Date.now()
     }
 
-    console.log(index, fireKey)
     if (!!firebase) {
       const endpoint = `${firebase}/${surveyName}/${surveyVersion}`
       firePush(endpoint, fireKey, table)
         .then((res, err) => {
-          console.log('key:', res)
           if (!err) store.dispatch({
             type: 'SET_FIRE_KEY',
             key: res
           })
         })
+    }
+
+    store.dispatch({
+      type: 'PUSH',
+      index: Number(index) + 1,
+      table
+    })
+
+    history.pushState({
+      ...table,
+      index: Number(index) + 1
+    }, `Survey`, `?index=${Number(index) + 1}`)
+  }
+
+  instaPush (newData) {
+    const { index } = this.state 
+    const table = {
+      ...this.state.table,
+      ...newData,
+      [`module_${index - 1}_t`]: Date.now()
     }
 
     store.dispatch({
@@ -170,6 +205,7 @@ class Container extends React.Component {
                 index={index}
                 length={queue.length}
                 push={::this.push}
+                instaPush={::this.instaPush}
                 reinsert={::this.reinsert}
               />
             }

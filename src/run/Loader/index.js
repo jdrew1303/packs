@@ -50,16 +50,16 @@ class Loader extends React.Component {
   }
 
   render () {
-    const { push, reinsert, table, index } = this.props
+    const { push, instaPush, reinsert, table, index } = this.props
     const Component = this.state.component
     const componentProps = {
       ...this.state.componentProps,
       push,
+      instaPush,
       reinsert,
       table,
       index
     }
-    console.log('c props', componentProps)
     return Component &&
     <Component {...componentProps} key={index} />
   }
