@@ -6,8 +6,6 @@ import firePush from '../../global/services/firePush'
 import echo from '../../global/services/echo'
 import simulateOver from '../../global/services/simulateOver'
 import Loader from '../Loader'
-import Table from '../Table'
-import Queue from '../Queue'
 
 @Radium
 class Container extends React.Component {
@@ -32,10 +30,10 @@ class Container extends React.Component {
       .value()
 
     const { modules, survey, firebase } = this.props
-    const { queue, table } = survey
+    const { screens, table } = survey
     store.dispatch({
       type: 'SET',
-      queue,
+      screens,
       table
     })
 
@@ -43,7 +41,7 @@ class Container extends React.Component {
     if (params.sim) {
       store.dispatch({
         type: 'SET_TABLE_INDEX',
-        table: simulateOver(table, queue.slice(0, Number(params.index)), modules),
+        table: simulateOver(table, screens.slice(0, Number(params.sim)), modules),
         index: Number(params.sim)
       })
     }
@@ -106,7 +104,7 @@ class Container extends React.Component {
   }
 
   instaPush (newData) {
-    const { index } = this.state 
+    const { index } = this.state
     const table = {
       ...this.state.table,
       ...newData,
@@ -121,7 +119,7 @@ class Container extends React.Component {
   }
 
   reinsert (moduleType, index) {
-    const mod = this.state.queue.filter((m) => {
+    const mod = this.state.screens.filter((m) => {
       return m.type === moduleType
     })[index]
 
@@ -137,7 +135,7 @@ class Container extends React.Component {
 
   render () {
     const { modules } = this.props
-    const { queue, table, index } = this.state
+    const { screens, table, index } = this.state
 
     const urlParams = _(location.search.slice(1).split('&'))
       .map((item) => item.split('='))
@@ -146,64 +144,16 @@ class Container extends React.Component {
 
     return (
       <div style={[styles.main]}>
-        <div>
-        {
-          urlParams.dev && !this.state.hideDevBar &&
-          <div style={[styles.row]}>
-            <div style={[styles.dev]} key="table">
-              <Table
-                data={table}
-                set={(newTable) => {
-                  store.dispatch({
-                    type: 'SET_TABLE',
-                    table: newTable
-                  })
-                }}
-              />
-            </div>
-            <div style={[styles.dev]} key="queue">
-              <Queue
-                data={queue}
-                index={index}
-                set={(queue) => {
-                  store.dispatch({
-                    type: 'SET_QUEUE',
-                    queue
-                  })
-                }}
-                onSwitch={(i) => {
-                  store.dispatch({
-                    type: 'SIMULATE',
-                    simulation: i
-                  })
-                }}
-              />
-            </div>
-          </div>
-        }
-        </div>
-        <div>
-        {
-          urlParams.dev &&
-          <div style={[styles.row]}>
-            <input
-              type="checkbox"
-              value={1}
-              onChange={() => this.setState({hideDevBar:!this.state.hideDevBar})}
-            />
-          </div>
-        }
-        </div>
         <div style={[styles.container]} key="container">
           <div style={[styles.center]}>
             {
-              queue &&
+              screens &&
               <Loader
                 modules={modules}
-                params={queue[index]}
+                params={screens[index]}
                 table={table}
                 index={index}
-                length={queue.length}
+                length={screens.length}
                 push={::this.push}
                 instaPush={::this.instaPush}
                 reinsert={::this.reinsert}

@@ -13,7 +13,7 @@ export default {
       CurrencyCode: 'USD'
     }
   },
-  queue: [ {
+  screens: [ {
     type: 'Bernoulli'
   }, {
     type: 'Mirror'

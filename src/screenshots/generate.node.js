@@ -31,7 +31,7 @@ function generateShots (url, browsers) {
   })
 }
 
-export default ({ S3, table, queue }) => {
+export default ({ S3, table, screens }) => {
   const bundle = fs.readFileSync(`${process.cwd()}/dist/bundle.js`)
 
   Upload(bundle, S3.Bucket, `${table.surveyName}${table.surveyVersion}/bundle.js`)
@@ -39,7 +39,7 @@ export default ({ S3, table, queue }) => {
       Upload(ContainerHTML(scriptUrl), S3.Bucket, `${table.surveyName}${table.surveyVersion}/index.html`)
         .then(url => {
           console.log(url)
-          Promise.all(queue.map((m, i) => generateShots(`${url}?index=${i}`, browsers)))
+          Promise.all(screens.map((m, i) => generateShots(`${url}?index=${i}`, browsers)))
             .then(jobIds => {
               writeFile(`${process.cwd()}/screenshots/job_ids.json`, JSON.stringify(jobIds, null, 2))
             })

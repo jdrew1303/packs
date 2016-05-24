@@ -9,19 +9,18 @@ function assignProps (params, table) {
     .value()
 }
 
-function simulateOver (table, queue, modules, index=0) {
-  if (!queue.length) {
+function simulateOver (table, screens, modules, index=0) {
+  if (!screens.length) {
     return table
   } else {
-    const component = modules[queue[0].type]
+    const component = modules[screens[0].type]
     component.defaultProps = component.defaultProps || {}
-    const props = { 
-      ...component.defaultProps,
-      ...assignProps(queue[0], table)
+    const props = {
+      ...assignProps(component.defaultProps, table),
+      ...assignProps(screens[0], table)
     }
     const simulated = component.simulate({ ...props, index })
-    console.log('simulated', props, simulated)
-    return simulateOver({...table, ...simulated}, queue.slice(1), modules, index + 1)
+    return simulateOver({...table, ...simulated}, screens.slice(1), modules, index + 1)
   }
 }
 

@@ -1,10 +1,10 @@
 import React from 'react'
 import { render } from 'react-dom'
-import Container from './Container'
+import Router from './Router'
 
 export default (survey, modules) => {
   render((
-    <Container
+    <Router
       survey={survey}
       modules={modules}
     />

@@ -5,7 +5,7 @@ export default createStore(function (state, action) {
     case 'SET':
       return {
         ...state,
-        queue: action.queue,
+        screens: action.screens,
         table: action.table
       }
 
@@ -15,10 +15,10 @@ export default createStore(function (state, action) {
         table: action.table
       }
 
-    case 'SET_QUEUE':
+    case 'SET_SCREENS':
       return {
         ...state,
-        queue: action.queue
+        screens: action.screens
       }
 
     case 'SET_INDEX':
@@ -48,9 +48,9 @@ export default createStore(function (state, action) {
       case 'INSERT':
         return {
           ...state,
-          queue: state.queue.slice(0, state.index)
+          screens: state.screens.slice(0, state.index)
             .concat(action.module)
-            .concat(state.queue.slice(state.index))
+            .concat(state.screens.slice(state.index))
         }
 
     case 'SIMULATE':
@@ -70,7 +70,7 @@ export default createStore(function (state, action) {
       return {
         ...state,
         table: null,
-        queue: [{}],
+        screens: [{}],
         index: 0,
         simulator: null,
         fireKey: null
